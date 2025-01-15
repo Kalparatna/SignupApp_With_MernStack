@@ -13,6 +13,7 @@ const SignupForm = () => {
 
   const [isSuccess, setIsSuccess] = useState(false); // State to show/hide popup
   const [error, setError] = useState(''); // State to store error messages
+  const [isLoading, setIsLoading] = useState(false); // Loading state to disable submit button
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +22,20 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Simple client-side validation for password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('Password must contain at least one uppercase letter, one number, and one special character.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setIsLoading(true);  // Start loading while the request is being processed
     try {
       const response = await axios.post('https://signup-app-with-mern-stack.vercel.app/signup', formData);
 
@@ -33,6 +48,8 @@ const SignupForm = () => {
       }
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred.');
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -78,7 +95,9 @@ const SignupForm = () => {
             onChange={handleChange}
             required
           />
-          <button type="submit">Signup</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Signing up...' : 'Signup'}
+          </button>
         </form>
         {error && <p className="error">{error}</p>}
         <p>
