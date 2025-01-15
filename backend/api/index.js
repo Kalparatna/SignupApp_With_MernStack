@@ -5,7 +5,16 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-
+app.use(
+  cors({
+    origin: [
+   
+      'signup-app-with-mern-stack-ipya.vercel.app', // Replace with your deployed frontend URL
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    credentials: true, // Allow cookies if needed
+  })
+);
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -84,4 +93,4 @@ app.get('/users', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch users', error });
   }
-}); 
+});
