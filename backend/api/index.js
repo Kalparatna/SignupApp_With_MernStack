@@ -5,18 +5,18 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+
+// Middleware
 app.use(
   cors({
     origin: [
-   
-      'signup-app-with-mern-stack-ipya.vercel.app', // Replace with your deployed frontend URL
+      'https://signup-app-with-mern-stack-ipya.vercel.app', // Replace with your frontend URL
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies if needed
   })
 );
-// Middleware
-app.use(cors());
+
 app.use(express.json());
 
 // MongoDB connection
@@ -39,7 +39,7 @@ const User = mongoose.model('User', userSchema);
 app.post('/signup', async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
-  // Validate password
+  // Validate password complexity
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({ message: 'Password does not meet complexity requirements.' });
@@ -50,6 +50,7 @@ app.post('/signup', async (req, res) => {
   }
 
   try {
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
@@ -74,8 +75,9 @@ app.post('/login', async (req, res) => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials' });
 
+    // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username }, 
+      { userId: user._id, username: user.username },
       'mySuperSecretKey1234',  // Replace with your JWT secret directly
       { expiresIn: '1h' }
     );
@@ -89,9 +91,12 @@ app.post('/login', async (req, res) => {
 // Fetch All Users Route
 app.get('/users', async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 });
+    const users = await User.find({}, { password: 0 });  // Exclude password field
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch users', error });
   }
 });
+
+// Export the Express app to be used by Vercel serverless
+module.exports = app;
