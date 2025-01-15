@@ -1,10 +1,7 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/react"
-    },
+  
     {
       "src": "backend/server.js",
       "use": "@vercel/node"
@@ -15,9 +12,6 @@
       "src": "/api/(.*)",
       "dest": "/backend/server.js"
     },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
+  
   ]
 }
