@@ -5,23 +5,25 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+
+// Proper CORS Configuration
 app.use(
   cors({
     origin: [
-   
-      'signup-app-with-mern-stack-ipya.vercel.app', // Replace with your deployed frontend URL
+      'https://signup-app-with-mern-stack-ipya.vercel.app', // Your deployed frontend URL
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies if needed
   })
 );
-// Middleware
-app.use(cors());
+
 app.use(express.json());
 
 // MongoDB connection
-const mongoURI = 'mongodb+srv://admin:admin%402023@cluster0.u3djt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';  // Replace with your actual MongoDB URI
-mongoose.connect(mongoURI)
+const mongoURI =
+  'mongodb+srv://admin:admin%402023@cluster0.u3djt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your actual MongoDB URI
+mongoose
+  .connect(mongoURI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('Connection error:', err));
 
@@ -41,7 +43,9 @@ app.post('/signup', async (req, res) => {
   // Validate password
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
   if (!passwordRegex.test(password)) {
-    return res.status(400).json({ message: 'Password does not meet complexity requirements.' });
+    return res
+      .status(400)
+      .json({ message: 'Password does not meet complexity requirements.' });
   }
 
   if (password !== confirmPassword) {
@@ -52,11 +56,14 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
-    res.status(201).json({ success: true, message: 'User registered successfully!' });
-
+    res
+      .status(201)
+      .json({ success: true, message: 'User registered successfully!' });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ message: 'Username or email already exists.' });
+      return res
+        .status(400)
+        .json({ message: 'Username or email already exists.' });
     }
     res.status(500).json({ message: 'Internal server error.' });
   }
@@ -71,15 +78,15 @@ app.post('/login', async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isPasswordCorrect)
+      return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign(
-      { userId: user._id, username: user.username }, 
-      'mySuperSecretKey1234',  // Replace with your JWT secret directly
+      { userId: user._id, username: user.username },
+      'mySuperSecretKey1234', // Replace with your JWT secret directly
       { expiresIn: '1h' }
     );
     res.status(200).json({ success: true, token });
-
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
