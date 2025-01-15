@@ -3,9 +3,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const app = express();
 
@@ -14,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = 'mongodb+srv://admin:admin%402023@cluster0.u3djt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';  // Replace with your actual MongoDB URI
 mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('Connection error:', err));
@@ -69,7 +66,7 @@ app.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, username: user.username }, 
-      process.env.JWT_SECRET,
+      'mySuperSecretKey1234',  // Replace with your JWT secret directly
       { expiresIn: '1h' }
     );
     res.status(200).json({ success: true, token });
@@ -89,5 +86,5 @@ app.get('/users', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;  // You can set a specific port for your backend
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
