@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/server.js",
+      "src": "server.js",  // Path to your server.js inside the backend folder
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/server.js"
+      "dest": "/backend/server.js"  // Ensure the path points to your backend folder and the server.js
     }
   ]
 }
