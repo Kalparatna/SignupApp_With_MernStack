@@ -5,7 +5,16 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-
+app.use(
+  cors({
+    origin: [
+   
+      'https://frontend.vercel.app', // Replace with your deployed frontend URL
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+    credentials: true, // Allow cookies if needed
+  })
+);
 // Middleware
 app.use(cors());
 app.use(express.json());
