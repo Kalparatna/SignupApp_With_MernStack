@@ -11,6 +11,7 @@ const LoginForm = () => {
 
   const [error, setError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to show login success message
+  const [isLoading, setIsLoading] = useState(false); // Loading state to disable submit button
   const navigate = useNavigate(); // To redirect to the homepage or dashboard
 
   const handleChange = (e) => {
@@ -20,6 +21,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading while the request is being processed
     try {
       const response = await axios.post('https://signup-app-with-mern-stack.vercel.app/login', formData);
 
@@ -36,6 +38,8 @@ const LoginForm = () => {
       }
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred.');
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -60,7 +64,9 @@ const LoginForm = () => {
             onChange={handleChange}
             required
           />
-          <button type="submit">Login</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
         {error && <p className="error">{error}</p>}
         {isLoggedIn && (
