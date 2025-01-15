@@ -2,6 +2,24 @@
 # MERN Stack Signup and Login Application
 
 This is a simple MERN (MongoDB, Express, React, Node.js) stack application for user registration and login functionalities, featuring a secure password validation system and JSON Web Token (JWT) authentication.
+## Screenshots
+
+Here are some screenshots of the application:
+
+![Signup Page](./images/1.png)
+_This is the signup page where users can register._
+
+![Login Page](./images/2.png)
+_User Successfully Signed Up._
+
+![Dashboard](./images/3.png)
+_This is login Page._
+
+![Error Message](./images/4.png)
+_User Logged in Succesfully._
+
+![Signup Success](./images/5.png)
+_Dashboard._
 
 ## Features
 
@@ -115,24 +133,6 @@ You can deploy the app to a platform like Vercel or Heroku. Make sure to configu
 - **Response**: 
   - `[ { username: 'user1', email: 'user1@example.com' }, { username: 'user2', email: 'user2@example.com' } ]`
 
-## Screenshots
-
-Here are some screenshots of the application:
-
-![Signup Page](./images/1.png)
-_This is the signup page where users can register._
-
-![Login Page](./images/2.png)
-_This is the login page where users can log in._
-
-![Dashboard](./images/3.png)
-_After logging in, users are redirected to their dashboard._
-
-![Error Message](./images/4.png)
-_This is the error message shown if login credentials are incorrect._
-
-![Signup Success](./images/5.png)
-_This is the success message shown after a successful signup._
 
 ## Contributing
 
