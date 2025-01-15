@@ -9,7 +9,7 @@ app.use(
   cors({
     origin: [
    
-      'https://frontend.vercel.app', // Replace with your deployed frontend URL
+      'signup-app-with-mern-stack-ipya.vercel.app', // Replace with your deployed frontend URL
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies if needed
