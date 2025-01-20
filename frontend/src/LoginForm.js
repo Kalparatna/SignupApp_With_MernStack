@@ -23,7 +23,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://signup-app-with-mern-stack.vercel.app', formData);
+      const response = await axios.post('https://signup-app-with-mern-stack.vercel.app/signup', formData);
 
       if (response.data.success) {
         // Store the JWT token in localStorage
