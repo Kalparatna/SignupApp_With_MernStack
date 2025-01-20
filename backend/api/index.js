@@ -34,7 +34,7 @@ mongoose
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('Connection error:', err));
 
-// Define User Schema and Model
+// Define User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -42,8 +42,13 @@ const userSchema = new mongoose.Schema({
   profileImage: { type: String },
 });
 
-// Ensure the model is not redefined
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+// Prevent the model from being redefined in serverless environments
+let User;
+try {
+  User = mongoose.model('User'); // Attempt to get the model
+} catch (error) {
+  User = mongoose.model('User', userSchema); // If not found, create it
+}
 
 // Image upload setup using multer
 const upload = multer({ dest: 'uploads/' });
@@ -52,6 +57,7 @@ const upload = multer({ dest: 'uploads/' });
 app.post('/signup', upload.single('image'), async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
+  // Validate password
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({ message: 'Password does not meet complexity requirements.' });
@@ -62,58 +68,14 @@ app.post('/signup', upload.single('image'), async (req, res) => {
   }
 
   try {
+    // Upload image to Cloudinary
     let profileImageUrl = null;
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
-      profileImageUrl = result.secure_url;
+      const result = await cloudinary.uploader.upload(req.file.path); // Upload image
+      profileImageUrl = result.secure_url; // Get the image URL
 
+      // Remove the uploaded file from local storage
       fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting file:', err);
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-      profileImage: profileImageUrl,
-    });
-    await newUser.save();
-
-    res.status(201).json({ success: true, message: 'User registered successfully!' });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Username or email already exists.' });
-    }
-    res.status(500).json({ message: 'Internal server error.' });
-  }
-});
-
-// Login Route
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials' });
-
-    const token = jwt.sign(
-      { userId: user._id, username: user.username },
-      'mySuperSecretKey1234',
-      { expiresIn: '1h' }
-    );
-    res.status(200).json({ success: true, token });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Listen on port
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+        if (err) {
+          console.error('Error deleting file:', err);
+      
